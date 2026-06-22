@@ -59,6 +59,19 @@ src/main/java/edu/eci/arsw/blueprints
 - Implementa un nuevo repositorio `PostgresBlueprintPersistence` que reemplace la versión en memoria.  
 - Mantén el contrato de la interfaz `BlueprintPersistence`.  
 
+---
+Comando para construir y iniciar contenedores en Docker:
+
+```bash
+docker compose up --build
+```
+
+Interfaz de respositorio con persistencia en base de datos usando Postgres
+
+![post](images/blueprintsPostgree.png)
+
+---
+
 ### 3. Buenas prácticas de API REST
 - Cambia el path base de los controladores a `/api/v1/blueprints`.  
 - Usa **códigos HTTP** correctos:  
@@ -79,11 +92,40 @@ src/main/java/edu/eci/arsw/blueprints
     "data": { "author": "john", "name": "house", "points": [...] }
   }
   ```
+---
+
+Ejemplo crear blueprint:
+
+```bash
+curl.exe --% -i -X POST http://localhost:8080/api/v1/blueprints -H "Content-Type: application/json" -d "{\"author\":\"john\",\"name\":\"kitchen\",\"points\":[{\"x\":1,\"y\":1},{\"x\":2,\"y\":2}]}"
+```
+
+Obtener todos los blueprints:
+
+```bash
+curl.exe -s http://localhost:8080/api/v1/blueprints         
+```
+
+Agregar un punto:
+```bash
+curl.exe --% -i -X PUT http://localhost:8080/api/v1/blueprints/john/kitchen/points -H "Content-Type: application/json" -d "{\"x\":3,\"y\":3}"
+```
+
+![http](images/blueprintsHttp.png)
+
 
 ### 4. OpenAPI / Swagger
 - Configura `springdoc-openapi` en el proyecto.  
 - Expón documentación automática en `/swagger-ui.html`.  
 - Anota endpoints con `@Operation` y `@ApiResponse`.
+
+---
+
+Documentación Swagger:
+
+![swagger](images/swagger.png)
+
+---
 
 ### 5. Filtros de *Blueprints*
 - Implementa filtros:
@@ -92,33 +134,52 @@ src/main/java/edu/eci/arsw/blueprints
 - Activa los filtros mediante perfiles de Spring (`redundancy`, `undersampling`).  
 
 ---
+Ejemplo sin filtros:
 
-## ✅ Entregables
+![identity](images/identity.png)
 
-1. Repositorio en GitHub con:  
-   - Código fuente actualizado.  
-   - Configuración PostgreSQL (`application.yml` o script SQL).  
-   - Swagger/OpenAPI habilitado.  
-   - Clase `ApiResponse<T>` implementada.  
+Ejemplo filtro redundancy:
 
-2. Documentación:  
-   - Informe de laboratorio con instrucciones claras.  
-   - Evidencia de consultas en Swagger UI y evidencia de mensajes en la base de datos.  
-   - Breve explicación de buenas prácticas aplicadas.  
+![redundancy](images/redundancy.png)
 
----
+Ejemplo filtro undersampling:
 
-## 📊 Criterios de evaluación
-
-| Criterio | Peso |
-|----------|------|
-| Diseño de API (versionamiento, DTOs, ApiResponse) | 25% |
-| Migración a PostgreSQL (repositorio y persistencia correcta) | 25% |
-| Uso correcto de códigos HTTP y control de errores | 20% |
-| Documentación con OpenAPI/Swagger + README | 15% |
-| Pruebas básicas (unitarias o de integración) | 15% |
+![undersampling](images/undersampling.png)
 
 **Bonus**:  
+---
+- Imagen de contenedor (`spring-boot:build-image`).
 
-- Imagen de contenedor (`spring-boot:build-image`).  
+Crear imagen
+
+```bash
+mvn -U clean spring-boot:build-image -DskipTests
+```
+![spring](images/spring-image.png)
+---
 - Métricas con Actuator.  
+
+![actuator](images/actuator.png)
+
+Endpoints disponibles:
+
+```bash
+curl.exe -i http://localhost:8080/actuator
+```
+
+Health:
+
+```bash
+curl.exe -i http://localhost:8080/actuator/health
+```
+
+Métricas:
+
+```bash
+curl.exe -i http://localhost:8080/actuator/metrics
+```
+
+Mappings:
+```bash
+curl.exe -i http://localhost:8080/actuator/mappings
+```

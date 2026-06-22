@@ -5,17 +5,19 @@ import edu.eci.arsw.blueprints.model.Blueprint;
 import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
 import edu.eci.arsw.blueprints.persistence.BlueprintPersistence;
 import edu.eci.arsw.blueprints.persistence.BlueprintPersistenceException;
+import edu.eci.arsw.blueprints.persistence.PostgresBlueprintPersistence;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class BlueprintsServices {
 
-    private final BlueprintPersistence persistence;
+    private final PostgresBlueprintPersistence persistence;
     private final BlueprintsFilter filter;
 
-    public BlueprintsServices(BlueprintPersistence persistence, BlueprintsFilter filter) {
+    public BlueprintsServices(PostgresBlueprintPersistence persistence, BlueprintsFilter filter) {
         this.persistence = persistence;
         this.filter = filter;
     }
@@ -25,11 +27,11 @@ public class BlueprintsServices {
     }
 
     public Set<Blueprint> getAllBlueprints() {
-        return persistence.getAllBlueprints();
+        return persistence.getAllBlueprints().stream().map(filter::apply).collect(Collectors.toSet());
     }
 
     public Set<Blueprint> getBlueprintsByAuthor(String author) throws BlueprintNotFoundException {
-        return persistence.getBlueprintsByAuthor(author);
+        return persistence.getBlueprintsByAuthor(author).stream().map(filter::apply).collect(Collectors.toSet());
     }
 
     public Blueprint getBlueprint(String author, String name) throws BlueprintNotFoundException {

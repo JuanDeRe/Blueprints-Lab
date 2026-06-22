@@ -41,6 +41,18 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    <groupId>org.postgresql</groupId>
+    <artifactId>postgresql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -61,6 +73,15 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>3.5.15</version>
+        <configuration>
+          <image>
+            <name>blueprints-lab:latest</name>
+            <builder>paketobuildpacks/builder-jammy-base:latest</builder>
+            <runImage>paketobuildpacks/run-jammy-base:latest</runImage>
+            <pullPolicy>IF_NOT_PRESENT</pullPolicy>
+          </image>
+        </configuration>
       </plugin>
     </plugins>
   </build>
