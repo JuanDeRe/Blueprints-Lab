@@ -1,5 +1,7 @@
 package edu.eci.arsw.blueprints.services;
 
+import edu.eci.arsw.blueprints.entity.BlueprintEntity;
+import edu.eci.arsw.blueprints.entity.BlueprintId;
 import edu.eci.arsw.blueprints.filters.BlueprintsFilter;
 import edu.eci.arsw.blueprints.model.Blueprint;
 import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
@@ -40,5 +42,13 @@ public class BlueprintsServices {
 
     public void addPoint(String author, String name, int x, int y) throws BlueprintNotFoundException {
         persistence.addPoint(author, name, x, y);
+    }
+
+    public void updateBlueprint(String author, String bpname, Blueprint bp) throws BlueprintNotFoundException, BlueprintPersistenceException {
+        if (!persistence.existsById(new BlueprintId(author, bpname))) {
+            throw new BlueprintNotFoundException("Blueprint doesnt exist");
+        }
+        persistence.deleteById(new BlueprintId(author, bpname));
+        persistence.saveBlueprint(bp);
     }
 }

@@ -160,4 +160,28 @@ public class BlueprintsAPIController {
             @Valid java.util.List<Point> points
     ) {
     }
+    @PutMapping("/{author}/{bpname}")
+    public ResponseEntity<ApiResponse<Blueprint>> updateBlueprint(
+            @PathVariable String author,
+            @PathVariable String bpname,
+            @Valid @RequestBody NewBlueprintRequest req
+    ) {
+        try {
+            Blueprint bp = new Blueprint(author, bpname, req.points());
+
+            services.updateBlueprint(author, bpname, bp);
+
+            return ResponseEntity
+                    .status(HttpStatus.ACCEPTED)
+                    .body(new ApiResponse<>(202, "blueprint updated", bp));
+
+        } catch (BlueprintNotFoundException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>(404, "blueprint not found", null));
+        } catch (BlueprintPersistenceException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse<>(400, "blueprint already exists", null));
+        }
+    }
 }
