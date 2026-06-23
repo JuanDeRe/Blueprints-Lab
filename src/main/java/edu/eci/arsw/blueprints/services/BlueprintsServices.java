@@ -3,6 +3,7 @@ package edu.eci.arsw.blueprints.services;
 import edu.eci.arsw.blueprints.entity.BlueprintEntity;
 import edu.eci.arsw.blueprints.entity.BlueprintId;
 import edu.eci.arsw.blueprints.filters.BlueprintsFilter;
+import edu.eci.arsw.blueprints.mapper.BlueprintMapper;
 import edu.eci.arsw.blueprints.model.Blueprint;
 import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
 import edu.eci.arsw.blueprints.persistence.BlueprintPersistence;
@@ -44,11 +45,21 @@ public class BlueprintsServices {
         persistence.addPoint(author, name, x, y);
     }
 
-    public void updateBlueprint(String author, String bpname, Blueprint bp) throws BlueprintNotFoundException, BlueprintPersistenceException {
-        if (!persistence.existsById(new BlueprintId(author, bpname))) {
-            throw new BlueprintNotFoundException("Blueprint doesnt exist");
+
+    public void updateBlueprint(String author, String bpname, Blueprint bp)
+            throws BlueprintNotFoundException {
+
+        if (persistence.findByAuthorAndName(author, bpname) == null) {
+            throw new BlueprintNotFoundException("Blueprint doesn't exist: " + author + "/" + bpname);
         }
-        persistence.deleteById(new BlueprintId(author, bpname));
-        persistence.saveBlueprint(bp);
+        BlueprintEntity entity = BlueprintMapper.toEntity(bp);
+        persistence.save(entity);
+    }
+
+    public void deleteBlueprint(String author, String bpname) throws BlueprintNotFoundException {
+        if (persistence.findByAuthorAndName(author, bpname) == null) {
+            throw new BlueprintNotFoundException("Blueprint doesn't exist: " + author + "/" + bpname);
+        }
+        persistence.deleteById(new BlueprintId(author,bpname));
     }
 }

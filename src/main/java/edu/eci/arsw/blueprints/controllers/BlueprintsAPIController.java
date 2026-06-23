@@ -9,6 +9,7 @@ import edu.eci.arsw.blueprints.services.BlueprintsServices;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
@@ -160,6 +161,7 @@ public class BlueprintsAPIController {
             @Valid java.util.List<Point> points
     ) {
     }
+    @Transactional
     @PutMapping("/{author}/{bpname}")
     public ResponseEntity<ApiResponse<Blueprint>> updateBlueprint(
             @PathVariable String author,
@@ -179,9 +181,23 @@ public class BlueprintsAPIController {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .body(new ApiResponse<>(404, "blueprint not found", null));
-        } catch (BlueprintPersistenceException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse<>(400, "blueprint already exists", null));
         }
+    }
+
+    @Transactional
+    @DeleteMapping("/{author}/{bpname}")
+    public ResponseEntity<ApiResponse<?>> delete(@PathVariable String author,
+                                                 @PathVariable String bpname
+    ){
+        try {
+            services.deleteBlueprint(author,bpname);
+        } catch (BlueprintNotFoundException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>(404, "blueprint not found", null));
+        }
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 }

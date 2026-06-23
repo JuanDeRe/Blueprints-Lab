@@ -78,4 +78,7 @@ public interface PostgresBlueprintPersistence extends JpaRepository<BlueprintEnt
     }
 
     List<BlueprintEntity> findAllByAuthor(String author);
+
+    BlueprintEntity findByAuthorAndName(String author, String bpname);
+
 }
